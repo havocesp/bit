@@ -7,6 +7,7 @@ import requests
 
 from bit.constants import SATOSHI, uBTC, mBTC, BTC
 from bit.utils import Decimal
+from security import safe_requests
 
 DEFAULT_CACHE_TIME = 60
 
@@ -106,7 +107,7 @@ class BitpayRates:
     @classmethod
     def currency_to_satoshi(cls, currency):
         headers = {"x-accept-version": "2.0.0", "Accept": "application/json"}
-        r = requests.get(cls.SINGLE_RATE + currency, headers=headers)
+        r = safe_requests.get(cls.SINGLE_RATE + currency, headers=headers)
         r.raise_for_status()
         rate = r.json()['data']['rate']
         return int(ONE / Decimal(rate) * BTC)
@@ -201,7 +202,7 @@ class BlockchainRates:
 
     @classmethod
     def currency_to_satoshi(cls, currency):
-        r = requests.get(cls.SINGLE_RATE.format(currency))
+        r = safe_requests.get(cls.SINGLE_RATE.format(currency))
         r.raise_for_status()
         rate = r.text
         return int(Decimal(rate) * BTC)
