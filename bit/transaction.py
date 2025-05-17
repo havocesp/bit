@@ -3,7 +3,6 @@ from collections import namedtuple
 from itertools import islice
 import math
 import re
-from random import randint, shuffle
 from bit.crypto import double_sha256, sha256
 from bit.exceptions import InsufficientFunds
 from bit.format import address_to_public_key_hash, segwit_scriptpubkey
@@ -48,6 +47,7 @@ from bit.constants import (
     OP_EQUAL,
     MESSAGE_LIMIT,
 )
+import secrets
 
 
 class TxIn:
@@ -261,7 +261,7 @@ def select_coins(target, fee, output_size, min_change, *, absolute_fee=False, co
             return []
         else:
             # Randomly explore next branch:
-            binary_random = randint(0, 1)
+            binary_random = secrets.SystemRandom().randint(0, 1)
             if binary_random:
                 # Explore inclusion branch first, else omission branch:
                 effective_value_new = effective_value + sorted_unspents[d].amount - fee * sorted_unspents[d].vsize
@@ -312,7 +312,7 @@ def select_coins(target, fee, output_size, min_change, *, absolute_fee=False, co
         if not consolidate:
             # To have a deterministic way of inserting inputs when
             # consolidating, we only shuffle the unspents otherwise.
-            shuffle(unspents)
+            secrets.SystemRandom().shuffle(unspents)
         while unspents:
             selected_coins.append(unspents.pop(0))
             estimated_fee = estimate_tx_fee(
