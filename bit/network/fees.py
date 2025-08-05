@@ -29,7 +29,7 @@ def get_fee(fast=True):
     :type fast: ``bool``
     :rtype: ``int``
     """
-    return requests.get(URL).json()['fastestFee' if fast else 'hourFee']
+    return requests.get(URL, timeout=60).json()['fastestFee' if fast else 'hourFee']
 
 
 def get_fee_local_cache(f):
@@ -49,7 +49,7 @@ def get_fee_local_cache(f):
 
             if not cached_fee_fast or now - fast_last_update > DEFAULT_CACHE_TIME:
                 try:
-                    request = requests.get(URL)
+                    request = requests.get(URL, timeout=60)
                     # If we have a non 2XX status code, raise HTTPError.
                     request.raise_for_status()
                     # Otherwise, try to parse json as normal.
@@ -73,7 +73,7 @@ def get_fee_local_cache(f):
 
             if not cached_fee_hour or now - hour_last_update > DEFAULT_CACHE_TIME:
                 try:
-                    request = requests.get(URL)
+                    request = requests.get(URL, timeout=60)
                     # If we have a non 2XX status code, raise HTTPError.
                     request.raise_for_status()
                     # Otherwise, try to parse json as normal.
